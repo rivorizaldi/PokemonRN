@@ -11,10 +11,11 @@ import {
     Text
 } from "native-base";
 import React, { Component } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { Image, TouchableOpacity, View } from "react-native";
 import ImagePicker from "react-native-image-picker";
 import { connect } from "react-redux";
 import { fetchPokemonCategory } from "../redux/actions/category";
+import { storePokemonData } from "../redux/actions/pokemon";
 import { fetchPokemonType } from "../redux/actions/type";
 
 class Add extends Component {
@@ -24,7 +25,11 @@ class Add extends Component {
             category: null,
             type1: null,
             type2: null,
-            image: null,
+            image: {
+                uri: null,
+                type: null,
+                name: null
+            },
             name: null
         };
     }
@@ -71,7 +76,7 @@ class Add extends Component {
         const latitude = navigation.getParam("latitude", "");
         const longitude = navigation.getParam("longitude", "");
 
-        console.log("test", this.state);
+        console.log("test", this.state.category);
 
         return (
             <Container>
@@ -199,11 +204,14 @@ class Add extends Component {
                                                     response.error
                                                 );
                                             } else {
-                                                const source = {
-                                                    uri: response.uri
-                                                };
                                                 this.setState({
-                                                    image: source
+                                                    ...this.state,
+                                                    image: {
+                                                        ...this.state.image,
+                                                        uri: response.uri,
+                                                        type: response.type,
+                                                        name: response.fileName
+                                                    }
                                                 });
                                             }
                                         }
@@ -211,11 +219,31 @@ class Add extends Component {
                                 }}
                             >
                                 <Text>Pick An Image</Text>
+                                <Image
+                                    style={{ width: 10, height: 10 }}
+                                    source={{ uri: this.state.image.uri }}
+                                />
                             </TouchableOpacity>
                         </Form>
                         <Button
                             onPress={() => {
-                                this.props.navigation.navigate("HomeScreen");
+                                let data = new FormData();
+
+                                data.append("name", this.state.name);
+                                data.append("category_id", this.state.category);
+                                data.append("latitude", latitude);
+                                data.append("longitude", longitude);
+                                data.append("image_url", this.state.image);
+                                data.append("types", this.state.type1);
+                                if (this.state.type2) {
+                                    data.append("types", this.state.type2);
+                                }
+
+                                this.props.storePokemonData(data);
+
+                                if (this.props.pokemonIsFulfilled) {
+                                    this.props.navigation.navigate("TabHome");
+                                }
                             }}
                             block
                             style={{
@@ -235,6 +263,7 @@ class Add extends Component {
 
 const mapStateToProps = state => {
     return {
+        pokemonIsFulfilled: state.pokemon.isFulfilled,
         user: state.user,
         category: state.category,
         type: state.type
@@ -244,7 +273,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         fetchPokemonCategory: () => dispatch(fetchPokemonCategory()),
-        fetchPokemonType: () => dispatch(fetchPokemonType())
+        fetchPokemonType: () => dispatch(fetchPokemonType()),
+        storePokemonData: data => dispatch(storePokemonData(data))
     };
 };
 

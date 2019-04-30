@@ -1,14 +1,32 @@
 import { Button, Container, Footer, Icon, Text } from "native-base";
 import React, { Component } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+    ActivityIndicator,
+    FlatList,
+    StyleSheet,
+    TouchableOpacity,
+    View
+} from "react-native";
+import Modal from "react-native-modal";
 import { connect } from "react-redux";
 import Detail from "../components/Detail";
 import { baseUrl } from "../helper/routes";
+import { deletePokemon } from "../redux/actions/pokemon";
 
 class DetailPokemon extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isModalVisible: false
+        };
+    }
+
     static navigationOptions = ({ navigation }) => ({
         headerRight: (
-            <TouchableOpacity onPress={() => {}} style={{ marginRight: 16 }}>
+            <TouchableOpacity
+                onPress={navigation.getParam("deleteItem")}
+                style={{ marginRight: 16 }}
+            >
                 <Icon
                     type="FontAwesome5"
                     name="trash-alt"
@@ -18,15 +36,21 @@ class DetailPokemon extends Component {
         )
     });
 
-    isEmpty = obj => {
-        for (var prop in obj) {
-            if (obj.hasOwnProperty(prop)) return false;
-        }
-        return true;
+    toggleModal = () =>
+        this.setState({ isModalVisible: !this.state.isModalVisible });
+
+    componentDidMount() {
+        this.props.navigation.setParams({ deleteItem: this.toggleModal });
+    }
+
+    deletePokemon = () => {
+        this.props.deletePokemon(this.props.pokemonId);
+        this.setState({ isModalVisible: !this.state.isModalVisible });
+        this.props.navigation.navigate("TabHome");
     };
 
     render() {
-        console.log(this.props.pokemonDetail);
+        console.log("pokemonItem render");
         return (
             <Container>
                 {this.props.isPending && (
@@ -53,6 +77,45 @@ class DetailPokemon extends Component {
                         <Text>Edit</Text>
                     </Button>
                 </Footer>
+                <Modal
+                    isVisible={this.state.isModalVisible}
+                    onBackdropPress={this.toggleModal}
+                    onBackButtonPress={this.toggleModal}
+                    animationOutTiming={300}
+                    animationIn={"fadeIn"}
+                    animationOut={"fadeOut"}
+                >
+                    <View
+                        style={{
+                            backgroundColor: "#fff",
+                            justifyContent: "center",
+                            padding: 8,
+                            borderRadius: 5
+                        }}
+                    >
+                        <Text style={{ fontWeight: "bold" }}>
+                            Do You Want To Delete {this.props.pokemonName}?
+                        </Text>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "flex-end"
+                            }}
+                        >
+                            <Button
+                                transparent
+                                dark
+                                onPress={this.deletePokemon}
+                            >
+                                <Text>Yes</Text>
+                            </Button>
+
+                            <Button transparent dark onPress={this.toggleModal}>
+                                <Text>No</Text>
+                            </Button>
+                        </View>
+                    </View>
+                </Modal>
             </Container>
         );
     }
@@ -82,11 +145,20 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
     return {
         pokemonDetail: state.pokemon.pokemonDetail,
-        isPending: state.pokemon.isPending
+        isPending: state.pokemon.isPending,
+        isFulfilled: state.pokemon.isFulfilled,
+        pokemonName: state.pokemon.pokemonName,
+        pokemonId: state.pokemon.pokemonId
+    };
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        deletePokemon: id => dispatch(deletePokemon(id))
     };
 };
 
 export default connect(
     mapStateToProps,
-    null
+    mapDispatchToProps
 )(DetailPokemon);

@@ -8,7 +8,10 @@ import { fetchPokemonDetail, fetchPokemonList } from "../redux/actions/pokemon";
 
 class Home extends Component {
     componentDidMount() {
-        this.props.fetchPokemonList();
+        const { navigation } = this.props;
+        navigation.addListener("willFocus", () => {
+            this.props.fetchPokemonList();
+        });
     }
 
     render() {

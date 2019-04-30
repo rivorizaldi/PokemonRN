@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, StyleSheet, View } from "react-native";
+import { Button, Dimensions, StyleSheet, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 class PickMap extends Component {
@@ -7,10 +7,13 @@ class PickMap extends Component {
         super();
         this.state = {
             focusLocation: {
-                latitude: 37.78825,
-                longitude: -122.4324,
+                latitude: -6.300937,
+                longitude: 106.735044,
                 latitudeDelta: 0.015,
-                longitudeDelta: 0.0121
+                longitudeDelta:
+                    (Dimensions.get("window").width /
+                        Dimensions.get("window").height) *
+                    0.0015
             },
             locationPick: false
         };
@@ -32,12 +35,9 @@ class PickMap extends Component {
 
     render() {
         let marker = null;
-
         if (this.state.locationPick) {
             marker = <MapView.Marker coordinate={this.state.focusLocation} />;
         }
-
-        console.log(this.state.focusLocation.longitude);
         return (
             <View style={styles.container}>
                 <MapView
@@ -67,18 +67,14 @@ class PickMap extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        // ...StyleSheet.absoluteFillObject,
-        // height: 400,
-        // width: 400,
-        // justifyContent: "flex-end",
-        // alignItems: "center"
-        width: "100%",
+        ...StyleSheet.absoluteFillObject,
+        height: 400,
+        width: 400,
+        justifyContent: "flex-end",
         alignItems: "center"
     },
     map: {
-        // ...StyleSheet.absoluteFillObject
-        width: "100%",
-        height: 250
+        ...StyleSheet.absoluteFillObject
     },
     button: {
         margin: 8

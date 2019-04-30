@@ -1,13 +1,4 @@
-import {
-    Badge,
-    Body,
-    Card,
-    CardItem,
-    H1,
-    Left,
-    Right,
-    Text
-} from "native-base";
+import { Badge, Body, Card, CardItem, H1, Left, Text } from "native-base";
 import React, { Component } from "react";
 import { Image, ScrollView, StyleSheet } from "react-native";
 
@@ -17,19 +8,54 @@ class Details extends Component {
             switch (x.name) {
                 case "Grass":
                     return (
-                        <Left key={x.id}>
-                            <Badge success>
-                                <Text style={{ fontSize: 12 }}>{x.name}</Text>
-                            </Badge>
-                        </Left>
+                        <Badge success key={x.id}>
+                            <Text style={{ fontSize: 12 }}>{x.name}</Text>
+                        </Badge>
                     );
                 case "Poison":
                     return (
-                        <Right key={x.id}>
-                            <Badge style={{ backgroundColor: "#A040A0" }}>
-                                <Text style={{ fontSize: 12 }}>{x.name}</Text>
-                            </Badge>
-                        </Right>
+                        <Badge
+                            key={x.id}
+                            style={{ backgroundColor: "#A040A0" }}
+                        >
+                            <Text style={{ fontSize: 12 }}>{x.name}</Text>
+                        </Badge>
+                    );
+                case "Fire":
+                    return (
+                        <Badge
+                            key={x.id}
+                            style={{ backgroundColor: "#F08030" }}
+                        >
+                            <Text style={{ fontSize: 12 }}>{x.name}</Text>
+                        </Badge>
+                    );
+                case "Water":
+                    return (
+                        <Badge
+                            key={x.id}
+                            style={{ backgroundColor: "#6890F0" }}
+                        >
+                            <Text style={{ fontSize: 12 }}>{x.name}</Text>
+                        </Badge>
+                    );
+                case "Bug":
+                    return (
+                        <Badge
+                            key={x.id}
+                            style={{ backgroundColor: "#B8B8D0" }}
+                        >
+                            <Text style={{ fontSize: 12 }}>{x.name}</Text>
+                        </Badge>
+                    );
+                case "Normal":
+                    return (
+                        <Badge
+                            key={x.id}
+                            style={{ backgroundColor: "#A8A878" }}
+                        >
+                            <Text style={{ fontSize: 12 }}>{x.name}</Text>
+                        </Badge>
                     );
             }
         });
@@ -65,7 +91,9 @@ class Details extends Component {
                             </Text>
                         </Body>
                     </CardItem>
-                    <CardItem style={{ paddingBottom: 12 }}>{types}</CardItem>
+                    <CardItem style={{ paddingBottom: 12 }}>
+                        <Body>{types}</Body>
+                    </CardItem>
                 </Card>
             </ScrollView>
         );
